@@ -52,6 +52,8 @@ import org.tmatesoft.svn.core.wc.SVNInfo;
 import org.tmatesoft.svn.core.wc.SVNRevision;
 import org.tmatesoft.svn.core.wc.SVNWCClient;
 
+import org.checkerframework.checker.determinism.qual.*;
+
 // A related program is the "mr" program (http://kitenet.net/~joey/code/mr/).
 // To read its documentation:  pod2man mr | nroff -man
 // Some differences are:
@@ -287,7 +289,7 @@ public class MultiVersionControl {
   /** User home directory. [default Java {@code user.home} property] */
   @OptionGroup("Configuration file")
   @Option(value = "User home directory.", noDocDefault = true)
-  public static String home = System.getProperty("user.home");
+  public static @NonDet String home = System.getProperty("user.home");
 
   /**
    * File with list of clones. Set it to /dev/null to suppress reading. [default {@code
@@ -296,7 +298,7 @@ public class MultiVersionControl {
   @Option(
       value = "File with list of clones.  Set it to /dev/null to suppress reading.",
       noDocDefault = true)
-  public String checkouts = "~/.mvc-checkouts";
+  public @NonDet String checkouts = "~/.mvc-checkouts";
 
   /** If false, clone command to skips existing directories. */
   @OptionGroup("Miscellaneous options")
@@ -445,7 +447,7 @@ public class MultiVersionControl {
    * @param path the input path, which might contain "~"
    * @return path with "~" expanded
    */
-  private static String expandTilde(String path) {
+  private static @NonDet String expandTilde(@NonDet String path) {
     return path.replaceFirst("^~", home);
   }
 
@@ -456,11 +458,12 @@ public class MultiVersionControl {
    * @param args the command-line arguments
    * @see MultiVersionControl
    */
+  @SuppressWarnings({"determinism:method.invocation.invalid","determinism:argument.type.incompatible"})  // Home dire has different files across machines
   public static void main(String[] args) {
     setupSvnkit();
-    MultiVersionControl mvc = new MultiVersionControl(args);
+    @Det MultiVersionControl mvc = new MultiVersionControl(args);
 
-    Set<Checkout> checkouts = new LinkedHashSet<>();
+    @Det Set<Checkout> checkouts = new LinkedHashSet<>();
 
     try {
       readCheckouts(new File(mvc.checkouts), checkouts, mvc.search_prefix);
@@ -471,7 +474,7 @@ public class MultiVersionControl {
     if (mvc.search) {
       // Postprocess command-line arguments
       for (String adir : mvc.ignore_dir) {
-        File afile = new File(expandTilde(adir));
+        @NonDet File afile = new File(expandTilde(adir));
         if (!afile.exists()) {
           System.err.printf(
               "Warning: Directory to ignore while searching for checkouts does not exist:%n  %s%n",
@@ -538,7 +541,7 @@ public class MultiVersionControl {
         "nullness:assignment.type.incompatible") // new C(underInit) yields @UnderInitialization;
     // @Initialized is safe
     @Initialized Options options = new Options("mvc [options] {clone,status,pull,list}", this);
-    String[] remainingArgs = options.parse(true, args);
+    @Det String[] remainingArgs = options.parse(true, args);
     if (remainingArgs.length != 1) {
       System.out.printf(
           "Please supply exactly one argument (found %d)%n%s",
@@ -995,7 +998,7 @@ public class MultiVersionControl {
       "nullness" // dependent: listFiles => non-null because dir is a directory, and
       // the checker doesn't know that checkouts.add etc do not affect dir
     })
-    File @NonNull [] childdirs = dir.listFiles(idf);
+    @Det File @NonNull [] childdirs = dir.listFiles(idf);
     if (childdirs == null) {
       System.err.printf(
           "childdirs is null (permission or other I/O problem?) for %s%n", dir.toString());
@@ -1084,7 +1087,7 @@ public class MultiVersionControl {
     String repository = null;
 
     File hgrcFile = new File(hgDir, "hgrc");
-    Ini ini;
+    @Det Ini ini;
     // There also exist Hg commands that will do this same thing.
     if (hgrcFile.exists()) {
       try {
@@ -1902,10 +1905,10 @@ public class MultiVersionControl {
     // members to construct the Commons Exec objects.
 
     @SuppressWarnings({"value"}) // ProcessBuilder.command() returns a non-empty list
-    String @MinLen(1) [] args = (String @MinLen(1) []) pb.command().toArray(new String[0]);
+    @Det String @MinLen(1) [] args = (String @MinLen(1) []) pb.command().toArray(new String[0]);
     CommandLine cmdLine = new CommandLine(args[0]); // constructor requires executable name
     @SuppressWarnings("nullness") // indices are in bounds, so no null values in resulting array
-    String[] argArray = Arrays.copyOfRange(args, 1, args.length);
+    @Det String[] argArray = Arrays.copyOfRange(args, 1, args.length);
     cmdLine.addArguments(argArray);
     DefaultExecuteResultHandler resultHandler = new DefaultExecuteResultHandler();
     DefaultExecutor executor = new DefaultExecutor();

@@ -55,16 +55,20 @@ apply plugin: 'org.checkerframework'
 
 checkerFramework {
   checkers = [
-    'org.checkerframework.checker.index.IndexChecker',
-    'org.checkerframework.checker.lock.LockChecker',
-    'org.checkerframework.checker.nullness.NullnessChecker',
-    'org.checkerframework.checker.regex.RegexChecker'
+    // 'org.checkerframework.checker.index.IndexChecker',
+    // 'org.checkerframework.checker.lock.LockChecker',
+    // 'org.checkerframework.checker.nullness.NullnessChecker',
+    // 'org.checkerframework.checker.regex.RegexChecker'
+    'org.checkerframework.checker.determinism.DeterminismChecker'
   ]
   extraJavacArgs = [
     '-Werror',
-    '-AcheckPurityAnnotations',
+    // '-AcheckPurityAnnotations',
     '-ArequirePrefixInWarningSuppressions',
-    '-AwarnUnneededSuppressions'
+    '-AwarnUnneededSuppressions',
+    '-AsuppressWarnings=determinism:override.receiver.invalid,determinism:override.param.invalid',
+    // '-AusePolyDefault',
+    '-Xmaxerrs','10000'
   ]
 }
 
