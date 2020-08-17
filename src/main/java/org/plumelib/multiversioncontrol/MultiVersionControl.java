@@ -536,6 +536,7 @@ public class MultiVersionControl {
    */
   @RequiresNonNull({"dir", "checkouts"})
   @EnsuresNonNull("action")
+  @SuppressWarnings("determinism:argument.type.incompatible")  // 'dir': NonDet
   public void parseArgs(@UnknownInitialization MultiVersionControl this, String[] args) {
     @SuppressWarnings(
         "nullness:assignment.type.incompatible") // new C(underInit) yields @UnderInitialization;
@@ -747,6 +748,7 @@ public class MultiVersionControl {
 
     @Override
     @Pure
+    @SuppressWarnings("determinism:return.type.incompatible")
     public int hashCode(@GuardSatisfied Checkout this) {
       return Objects.hash(repoType, canonicalDirectory, module);
     }
@@ -772,7 +774,8 @@ public class MultiVersionControl {
    * @throws IOException if there is trouble reading the file (or file sysetm?)
    */
   @SuppressWarnings({
-    "StringSplitter" // don't add dependence on Guava
+    "StringSplitter", // don't add dependence on Guava
+          "determinism:method.invocation.invalid","determinism:argument.type.incompatible"  // 'dir': NonDet
   })
   static void readCheckouts(File file, Set<Checkout> checkouts, boolean search_prefix)
       throws IOException {
@@ -791,7 +794,7 @@ public class MultiVersionControl {
         continue;
       }
 
-      String[] splitTwo = line.split("[ \t]+");
+      @Det String[] splitTwo = line.split("[ \t]+");
       if (debug) {
         System.out.println("split length: " + splitTwo.length);
       }
@@ -809,7 +812,7 @@ public class MultiVersionControl {
           currentRootIsRepos = false;
           // If the CVSROOT is remote, try to make it local.
           if (currentRoot.startsWith(":ext:")) {
-            String[] rootWords = currentRoot.split(":");
+            @Det String[] rootWords = currentRoot.split(":");
             String possibleRoot = rootWords[rootWords.length - 1];
             if (new File(possibleRoot).isDirectory()) {
               currentRoot = possibleRoot;
@@ -892,7 +895,7 @@ public class MultiVersionControl {
         if (dirParent == null || !dirParent.isDirectory()) {
           continue;
         }
-        File[] siblings = dirParent.listFiles(namePrefixFilter);
+        @Det File[] siblings = dirParent.listFiles(namePrefixFilter);
         if (siblings == null) {
           throw new Error(
               String.format(
@@ -956,6 +959,7 @@ public class MultiVersionControl {
    * @param checkouts the set to populate; is side-effected by this method
    * @param ignoreDirs directories not to search within
    */
+  @SuppressWarnings("determinism:argument.type.incompatible")  // 'dir': NonDet
   private static void findCheckouts(File dir, Set<Checkout> checkouts, List<File> ignoreDirs) {
     if (!dir.isDirectory()) {
       // This should never happen, unless the directory is deleted between
@@ -995,7 +999,7 @@ public class MultiVersionControl {
     }
 
     @SuppressWarnings({
-      "nullness" // dependent: listFiles => non-null because dir is a directory, and
+      "nullness", // dependent: listFiles => non-null because dir is a directory, and
       // the checker doesn't know that checkouts.add etc do not affect dir
     })
     @Det File @NonNull [] childdirs = dir.listFiles(idf);
@@ -1004,6 +1008,7 @@ public class MultiVersionControl {
           "childdirs is null (permission or other I/O problem?) for %s%n", dir.toString());
       return;
     }
+
     Arrays.sort(
         childdirs,
         new Comparator<File>() {
@@ -1380,6 +1385,7 @@ public class MultiVersionControl {
    *
    * @param checkouts the clones and checkouts to process
    */
+  @SuppressWarnings("determinism:nondeterministic.tostring")
   public void process(Set<Checkout> checkouts) {
     // Always run at least one command, but sometimes up to three.
     ProcessBuilder pb = new ProcessBuilder("");
@@ -1840,7 +1846,7 @@ public class MultiVersionControl {
   // calling "hg showconfig".  This hack is good enough for now.
   private @Nullable String defaultPath(File dir) {
     File hgrc = new File(new File(dir, ".hg"), "hgrc");
-    try (EntryReader er = new EntryReader(hgrc, "^#.*", null)) {
+    try (@Det EntryReader er = new EntryReader(hgrc, "^#.*", null)) {
       for (String line : er) {
         Matcher m = defaultPattern.matcher(line);
         if (m.matches()) {
