@@ -458,7 +458,7 @@ public class MultiVersionControl {
    * @param args the command-line arguments
    * @see MultiVersionControl
    */
-  @SuppressWarnings({"determinism:method.invocation.invalid","determinism:argument.type.incompatible"})  // Home dire has different files across machines
+  @SuppressWarnings({"determinism:method.invocation.invalid","determinism:argument.type.incompatible"})  // Home dir has different files across machines; True positive but expected behavior
   public static void main(String[] args) {
     setupSvnkit();
     @Det MultiVersionControl mvc = new MultiVersionControl(args);
