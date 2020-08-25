@@ -536,7 +536,7 @@ public class MultiVersionControl {
    */
   @RequiresNonNull({"dir", "checkouts"})
   @EnsuresNonNull("action")
-  @SuppressWarnings("determinism:argument.type.incompatible")  // 'dir': NonDet
+  @SuppressWarnings("determinism:argument.type.incompatible")  // Home dir has different files across machines; True positive but expected behavior
   public void parseArgs(@UnknownInitialization MultiVersionControl this, String[] args) {
     @SuppressWarnings(
         "nullness:assignment.type.incompatible") // new C(underInit) yields @UnderInitialization;
@@ -775,7 +775,7 @@ public class MultiVersionControl {
    */
   @SuppressWarnings({
     "StringSplitter", // don't add dependence on Guava
-          "determinism:method.invocation.invalid","determinism:argument.type.incompatible"  // 'dir': NonDet
+          "determinism:method.invocation.invalid","determinism:argument.type.incompatible"  // Home dir has different files across machines; True positive but expected behavior
   })
   static void readCheckouts(File file, Set<Checkout> checkouts, boolean search_prefix)
       throws IOException {
@@ -959,7 +959,7 @@ public class MultiVersionControl {
    * @param checkouts the set to populate; is side-effected by this method
    * @param ignoreDirs directories not to search within
    */
-  @SuppressWarnings("determinism:argument.type.incompatible")  // 'dir': NonDet
+  @SuppressWarnings("determinism:argument.type.incompatible")  // Iteration over a sorted array of files for printing
   private static void findCheckouts(File dir, Set<Checkout> checkouts, List<File> ignoreDirs) {
     if (!dir.isDirectory()) {
       // This should never happen, unless the directory is deleted between
