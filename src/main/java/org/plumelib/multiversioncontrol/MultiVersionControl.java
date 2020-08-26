@@ -748,7 +748,6 @@ public class MultiVersionControl {
 
     @Override
     @Pure
-    @SuppressWarnings("determinism:return.type.incompatible")
     public int hashCode(@GuardSatisfied Checkout this) {
       return Objects.hash(repoType, canonicalDirectory, module);
     }
@@ -959,7 +958,6 @@ public class MultiVersionControl {
    * @param checkouts the set to populate; is side-effected by this method
    * @param ignoreDirs directories not to search within
    */
-  @SuppressWarnings("determinism:argument.type.incompatible")  // Iteration over a sorted array of files for printing
   private static void findCheckouts(File dir, Set<Checkout> checkouts, List<File> ignoreDirs) {
     if (!dir.isDirectory()) {
       // This should never happen, unless the directory is deleted between
@@ -1385,7 +1383,6 @@ public class MultiVersionControl {
    *
    * @param checkouts the clones and checkouts to process
    */
-  @SuppressWarnings("determinism:nondeterministic.tostring")
   public void process(Set<Checkout> checkouts) {
     // Always run at least one command, but sometimes up to three.
     ProcessBuilder pb = new ProcessBuilder("");
