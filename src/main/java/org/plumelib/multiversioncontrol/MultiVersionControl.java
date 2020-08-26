@@ -748,6 +748,7 @@ public class MultiVersionControl {
 
     @Override
     @Pure
+    @SuppressWarnings("determinism:return.type.incompatible") // hashCode: all arguments have deterministic hash code
     public int hashCode(@GuardSatisfied Checkout this) {
       return Objects.hash(repoType, canonicalDirectory, module);
     }
@@ -958,6 +959,7 @@ public class MultiVersionControl {
    * @param checkouts the set to populate; is side-effected by this method
    * @param ignoreDirs directories not to search within
    */
+  @SuppressWarnings("determinism:type.incompatible")  // sort does not refine its argument
   private static void findCheckouts(File dir, Set<Checkout> checkouts, List<File> ignoreDirs) {
     if (!dir.isDirectory()) {
       // This should never happen, unless the directory is deleted between
