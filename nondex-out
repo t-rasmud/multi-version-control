@@ -1,0 +1,13 @@
+> Task :createCheckerFrameworkManifest
+> Task :compileJava
+> Task :processResources NO-SOURCE
+> Task :classes
+> Task :nondexPrepare
+> Task :genOutJar
+> Task :compileTestJava NO-SOURCE
+> Task :processTestResources NO-SOURCE
+> Task :testClasses UP-TO-DATE
+> Task :nondexTest NO-SOURCE
+
+BUILD SUCCESSFUL in 24s
+4 actionable tasks: 4 executed
