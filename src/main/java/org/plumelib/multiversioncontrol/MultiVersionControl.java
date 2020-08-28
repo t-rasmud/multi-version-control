@@ -536,7 +536,7 @@ public class MultiVersionControl {
    */
   @RequiresNonNull({"dir", "checkouts"})
   @EnsuresNonNull("action")
-  @SuppressWarnings("determinism:argument.type.incompatible")  // true positive: file system: home dir
+  @SuppressWarnings("determinism:argument.type.incompatible")  // true positive; file system: home dir
   public void parseArgs(@UnknownInitialization MultiVersionControl this, String[] args) {
     @SuppressWarnings(
         "nullness:assignment.type.incompatible") // new C(underInit) yields @UnderInitialization;
