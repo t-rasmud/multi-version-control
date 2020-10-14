@@ -113,7 +113,7 @@ import org.checkerframework.checker.determinism.qual.*;
  *   <li id="optiongroup:Miscellaneous-options">Miscellaneous options
  *       <ul>
  *         <li id="option:redo-existing"><b>--redo-existing=</b><i>boolean</i>. If false, clone
- *             command to skips existing directories. [default false]
+ *             command skips existing directories. [default false]
  *         <li id="option:timeout"><b>--timeout=</b><i>int</i>. Terminating the process can leave
  *             the repository in a bad state, so set this rather high for safety. Also, the timeout
  *             needs to account for the time to run hooks (that might recompile or run tests).
@@ -300,7 +300,7 @@ public class MultiVersionControl {
       noDocDefault = true)
   public @NonDet String checkouts = "~/.mvc-checkouts";
 
-  /** If false, clone command to skips existing directories. */
+  /** If false, clone command skips existing directories. */
   @OptionGroup("Miscellaneous options")
   @Option("Redo existing clones; relevant only to clone command")
   public boolean redo_existing = false;
@@ -498,12 +498,19 @@ public class MultiVersionControl {
               "Directory in which to search for checkouts is not a directory: %s%n", adir);
           System.exit(2);
         }
+        int oldCheckouts = checkouts.size();
         findCheckouts(new File(adir), checkouts, mvc.ignoreDirs);
+        if (debug) {
+          System.out.printf("Searching added %d checkouts%n", checkouts.size() - oldCheckouts);
+        }
       }
     }
 
     if (debug) {
-      System.out.println("Processing checkouts read from " + checkouts);
+      System.out.printf("About to process %d checkouts:%n", checkouts.size());
+      for (Checkout c : checkouts) {
+        System.out.println("  " + c);
+      }
     }
     mvc.process(checkouts);
   }
@@ -964,9 +971,15 @@ public class MultiVersionControl {
     if (!dir.isDirectory()) {
       // This should never happen, unless the directory is deleted between
       // the call to findCheckouts and the test of isDirectory.
+      if (debug) {
+        System.out.println("findCheckouts: dir is not a directory: " + dir);
+      }
       return;
     }
     if (ignoreDirs.contains(dir)) {
+      if (debug) {
+        System.out.println("findCheckouts: ignoring " + dir);
+      }
       return;
     }
 
@@ -988,6 +1001,9 @@ public class MultiVersionControl {
         return;
       } else if (dirName.equals(".hg")) {
         checkouts.add(dirToCheckoutHg(dir, parent));
+        return;
+      } else if (dirName.equals(".git")) {
+        checkouts.add(dirToCheckoutGit(dir, parent));
         return;
       } else if (dirName.equals(".svn")) {
         Checkout c = dirToCheckoutSvn(parent);
