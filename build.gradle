@@ -67,10 +67,10 @@ checkerFramework {
     '-Werror',
     // '-AcheckPurityAnnotations',
     '-ArequirePrefixInWarningSuppressions',
-    '-AwarnUnneededSuppressions',
+    '-AwarnUnneededSuppressions', '-AwarnUnneededSuppressionsExceptions=purity|method.guarantee.violated',
     '-AsuppressWarnings=determinism:override.receiver.invalid,determinism:override.param.invalid',
     // '-AusePolyDefault',
-    '-Xmaxerrs','10000'
+    '-Xmaxerrs','10000',
   ]
 }
 
