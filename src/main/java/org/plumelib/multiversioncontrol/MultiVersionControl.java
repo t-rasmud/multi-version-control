@@ -458,7 +458,7 @@ public class MultiVersionControl {
    * @param args the command-line arguments
    * @see MultiVersionControl
    */
-  @SuppressWarnings({"determinism:method.invocation.invalid","determinism:argument.type.incompatible"})  // true positive; file system: home dir
+  // true positive; file system: home dir
   public static void main(String[] args) {
     setupSvnkit();
     @Det MultiVersionControl mvc = new MultiVersionControl(args);
@@ -543,7 +543,7 @@ public class MultiVersionControl {
    */
   @RequiresNonNull({"dir", "checkouts"})
   @EnsuresNonNull("action")
-  @SuppressWarnings("determinism:argument.type.incompatible")  // true positive; file system: home dir
+  // true positive; file system: home dir
   public void parseArgs(@UnknownInitialization MultiVersionControl this, String[] args) {
     @SuppressWarnings(
         "nullness:assignment.type.incompatible") // new C(underInit) yields @UnderInitialization;
@@ -782,8 +782,8 @@ public class MultiVersionControl {
    */
   @SuppressWarnings({
     "StringSplitter", // don't add dependence on Guava
-    "determinism:method.invocation.invalid","determinism:argument.type.incompatible"  // true positive; file system: home dir
   })
+  // true positive; file system: home dir
   static void readCheckouts(File file, Set<Checkout> checkouts, boolean search_prefix)
       throws IOException {
     RepoType currentType = RepoType.BZR; // arbitrary choice, to avoid uninitialized variable
