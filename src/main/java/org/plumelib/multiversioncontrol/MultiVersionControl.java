@@ -54,6 +54,8 @@ import org.tmatesoft.svn.core.wc.SVNWCClient;
 
 import org.checkerframework.checker.determinism.qual.*;
 
+import static org.checkerframework.checker.determinism.DeterminismUtil.*;
+
 // A related program is the "mr" program (http://kitenet.net/~joey/code/mr/).
 // To read its documentation:  pod2man mr | nroff -man
 // Some differences are:
@@ -966,7 +968,6 @@ public class MultiVersionControl {
    * @param checkouts the set to populate; is side-effected by this method
    * @param ignoreDirs directories not to search within
    */
-  @SuppressWarnings("determinism:type.incompatible")  // sort does not refine its argument
   private static void findCheckouts(File dir, Set<Checkout> checkouts, List<File> ignoreDirs) {
     if (!dir.isDirectory()) {
       // This should never happen, unless the directory is deleted between
@@ -1025,7 +1026,7 @@ public class MultiVersionControl {
       return;
     }
 
-    Arrays.sort(
+    @Det File @Det [] childdirsSorted = sort(
         childdirs,
         new Comparator<File>() {
           @Override
@@ -1033,7 +1034,7 @@ public class MultiVersionControl {
             return o1.getName().compareTo(o2.getName());
           }
         });
-    for (File childdir : childdirs) {
+    for (File childdir : childdirsSorted) {
       findCheckouts(childdir, checkouts, ignoreDirs);
     }
   }
