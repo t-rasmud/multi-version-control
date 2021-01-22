@@ -73,6 +73,7 @@ checkerFramework {
     '-AsuppressWarnings=determinism:override.receiver.invalid,determinism:override.param.invalid',
     // '-AusePolyDefault',
     '-Xmaxerrs','10000',
+    '-Xmaxwarns','10000',
   ]
 }
 
