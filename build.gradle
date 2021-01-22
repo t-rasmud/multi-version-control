@@ -74,6 +74,7 @@ checkerFramework {
     // '-AusePolyDefault',
     '-Xmaxerrs','10000',
     '-Awarns',
+    '-Xmaxwarns','10000',
   ]
 }
 
